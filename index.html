@@ -1,539 +1,369 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-  <title>YOUTUBE HUB TOOL</title>
-  <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet" />
-  <style>
-    /* Reset and base */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    body, html {
-      height: 100%;
-      font-family: 'Roboto', Arial, sans-serif;
-      background: #f4f6f9;
-      color: #222;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      overflow-x: hidden;
-    }
-    a {
-      text-decoration: none;
-      color: inherit;
-    }
-
-    /* Navigation */
-    header {
-      background: #007bff;
-      color: white;
-      padding: 18px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 2000;
-      box-shadow: 0 2px 10px rgb(0 123 255 / 0.3);
-    }
-    .logo {
-      font-weight: 700;
-      font-size: 1.6rem;
-      letter-spacing: 1.2px;
-    }
-
-    nav {
-      display: flex;
-      gap: 24px;
-    }
-    nav a {
-      font-weight: 500;
-      font-size: 1em;
-      color: white;
-      transition: color 0.3s ease;
-    }
-    nav a:hover {
-      color: #d1e7ff;
-    }
-
-    /* Hamburger for mobile */
-    .hamburger {
-      display: none;
-      flex-direction: column;
-      cursor: pointer;
-      width: 28px;
-      height: 22px;
-      justify-content: space-between;
-    }
-    .hamburger div {
-      height: 3px;
-      background: white;
-      border-radius: 2px;
-      transition: 0.3s;
-    }
-
-    /* Drawer Menu */
-    #drawer {
-      position: fixed;
-      top: 0;
-      right: -250px;
-      height: 100%;
-      width: 250px;
-      background: #007bff;
-      box-shadow: -2px 0 10px rgba(0,0,0,0.3);
-      padding-top: 60px;
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-      transition: right 0.3s ease;
-      z-index: 1999;
-    }
-    #drawer.show {
-      right: 0;
-    }
-    #drawer a {
-      color: white;
-      font-size: 1.2rem;
-      padding: 10px 20px;
-      border-bottom: 1px solid #0a59d9;
-    }
-    #drawer a:hover {
-      background: rgba(255,255,255,0.15);
-    }
-
-    /* Main container */
-    main {
-      max-width: 700px;
-      background: white;
-      margin: 32px auto 80px;
-      border-radius: 18px;
-      padding: 30px 28px 36px;
-      box-shadow: 0 12px 34px rgb(0 0 0 / 0.10);
-      text-align: center;
-      position: relative;
-      user-select: none;
-    }
-
-    /* Input and button */
-    input#videoUrl {
-      width: 100%;
-      border-radius: 10px;
-      border: 1.8px solid #dde1e5;
-      font-size: 1.15rem;
-      padding: 14px 18px;
-      margin-bottom: 18px;
-      transition: border-color 0.3s ease;
-      font-family: inherit;
-    }
-    input#videoUrl:focus {
-      outline: none;
-      border-color: #007bff;
-      box-shadow: 0 0 6px #007bffaa;
-    }
-
-    button#extractBtn {
-      background: #007bff;
-      border-radius: 10px;
-      border: none;
-      color: white;
-      font-weight: 700;
-      font-size: 1.2rem;
-      padding: 14px 35px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      box-shadow: 0 5px 14px rgba(0, 123, 255, 0.5);
-      margin-bottom: 30px;
-      user-select: none;
-    }
-    button#extractBtn:hover {
-      background: #0056b3;
-    }
-
-    /* Video Info Card Layout */
-    .video-info {
-      text-align: left;
-    }
-    .thumbnail {
-      margin-bottom: 24px;
-      border-radius: 14px;
-      box-shadow: 0 7px 21px rgb(0 0 0 / 0.10);
-      cursor: pointer;
-      overflow: hidden;
-      position: relative;
-      transition: transform 0.3s ease;
-    }
-    .thumbnail img {
-      width: 100%;
-      display: block;
-      border-radius: 14px;
-      user-select: none;
-      pointer-events: none;
-    }
-    .thumbnail:hover {
-      transform: scale(1.03);
-    }
-    .download-btn {
-      position: absolute;
-      bottom: 14px;
-      right: 14px;
-      background-color: #28a745cc;
-      backdrop-filter: blur(6px);
-      border: none;
-      color: white;
-      padding: 11px 22px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 1rem;
-      border-radius: 14px;
-      box-shadow: 0 3px 8px rgb(0 0 0 / 0.22);
-      user-select: none;
-      transition: background-color 0.3s ease;
-    }
-    .download-btn:hover {
-      background-color: #218838cc;
-    }
-
-    /* Info boxes */
-    .info-box {
-      background: #f9fbfd;
-      border-left: 6px solid #007bff;
-      padding: 17px 22px;
-      margin-bottom: 24px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      user-select: text;
-    }
-    .info-text {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: #08409e;
-      word-break: break-word;
-      margin-right: 14px;
-      line-height: 1.4;
-      flex-grow: 1;
-    }
-    .copy-btn {
-      background: #28a745;
-      border: none;
-      color: white;
-      padding: 8px 14px;
-      border-radius: 14px;
-      font-weight: 600;
-      font-size: 0.95rem;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      user-select: none;
-      white-space: nowrap;
-      box-shadow: 0 3px 10px rgb(0 0 0 / 0.22);
-    }
-    .copy-btn:hover {
-      background: #1e7e34;
-    }
-
-    /* Tags */
-    .tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 10px;
-      margin-bottom: 30px;
-    }
-    .tag-wrapper {
-      background: #ddeeff;
-      border-radius: 16px;
-      padding: 7px 16px;
-      font-weight: 600;
-      font-size: 1rem;
-      color: #004085;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      box-shadow: 0 2px 12px rgb(0 0 0 / 0.08);
-      user-select: text;
-    }
-    .tag-copy-btn {
-      background: #007bffaa;
-      border: none;
-      border-radius: 14px;
-      color: white;
-      cursor: pointer;
-      font-size: 0.9rem;
-      padding: 4px 10px;
-      transition: background-color 0.3s ease;
-      box-shadow: 0 2px 7px rgb(0 0 0 / 0.2);
-      user-select: none;
-      font-weight: 600;
-    }
-    .tag-copy-btn:hover {
-      background: #0056b3cc;
-    }
-
-    /* Toast */
-    .toast {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background-color: #007bffdd;
-      padding: 14px 28px;
-      color: #fff;
-      font-weight: 600;
-      border-radius: 22px;
-      box-shadow: 0 3px 20px rgb(0 0 0 / 0.3);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.35s ease;
-      user-select: none;
-      z-index: 2000;
-    }
-    .toast.show {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    /* Footer */
-    footer {
-      text-align: center;
-      padding: 22px 12px;
-      background-color: #222;
-      color: #ddd;
-      font-weight: 500;
-      font-size: 0.9rem;
-      user-select: none;
-      display: flex;
-      justify-content: center;
-      gap: 24px;
-      flex-wrap: wrap;
-      border-top: 1px solid #333;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 1500;
-    }
-    footer a {
-      color: #aaa;
-      font-weight: 400;
-      padding: 8px 13px;
-      user-select: none;
-      border-radius: 12px;
-      transition: background-color 0.3s ease, color 0.3s ease;
-    }
-    footer a:hover {
-      background-color: #007bff;
-      color: white;
-      text-decoration: none;
-    }
-
-    /* Pages overlay: slide in */
-    section.page-content {
-      position: fixed;
-      top: 60px;
-      bottom: 60px;
-      left: 100%;
-      width: 100%;
-      max-width: 450px;
-      background: white;
-      box-shadow: -6px 2px 16px rgba(0, 0, 0, 0.18);
-      padding: 24px 26px;
-      border-radius: 0 0 0 14px;
-      overflow-y: auto;
-      transition: left 0.35s ease;
-      font-size: 1.05rem;
-      line-height: 1.45;
-      z-index: 1800;
-      user-select: text;
-    }
-    section.page-content.active {
-      left: calc(100% - 450px);
-    }
-    section.page-content h2 {
-      margin-bottom: 16px;
-      color: #007bff;
-      font-weight: 700;
-      font-size: 1.6rem;
-      text-align: center;
-    }
-    section.page-content p {
-      color: #333;
-      font-weight: 400;
-    }
-
-    /* Scrollbar thin & nice */
-    ::-webkit-scrollbar {
-      width: 7px;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #007bffcc;
-      border-radius: 12px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #f1f4f9;
-    }
-
-    /* Responsive */
-    @media (max-width: 720px) {
-      main {
-        margin: 24px 14px 100px;
-        padding: 24px 20px 32px;
-      }
-      nav {
-        display: none;
-      }
-      .hamburger {
-        display: flex;
-      }
-      section.page-content {
-        max-width: 100vw;
-        border-radius: 0;
-        left: 100%;
-        top: 60px;
-        bottom: 60px;
-      }
-      section.page-content.active {
-        left: 0;
-      }
-      footer {
-        flex-direction: column;
-        gap: 15px;
-        font-size: 0.85rem;
-        padding: 18px 8px;
-      }
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>YOUTUBE HUB TOOL</title>
+<link rel="icon" href="favicon.ico" type="image/x-icon" />
+<link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap" rel="stylesheet" />
+<style>
+  /* Reset */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+  body, html {
+    margin: 0; padding: 0;
+    font-family: 'Roboto', sans-serif;
+    background: #fafafa;
+    color: #333;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    height: 100%;
+  }
+  /* Container and Layout */
+  #app {
+    max-width: 480px;
+    margin: auto;
+    background-color: #fff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0 18px rgba(0,0,0,0.08);
+  }
+  header {
+    background: linear-gradient(90deg, #ff0000 0%, #cc0000 100%);
+    padding: 20px 16px;
+    text-align: center;
+    color: white;
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    box-shadow: 0 4px 8px rgba(204,0,0,0.4);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+  nav {
+    display: flex;
+    justify-content: space-around;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+  nav button {
+    flex-grow: 1;
+    padding: 14px 12px;
+    background: none;
+    border: none;
+    color: #333;
+    font-weight: 500;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background-color 0.25s, color 0.25s;
+    border-bottom: 3px solid transparent;
+  }
+  nav button.active,
+  nav button:hover {
+    color: #d32f2f;
+    border-bottom-color: #d32f2f;
+    font-weight: 700;
+  }
+  main {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 18px 16px;
+  }
+  /* Input and Buttons */
+  input[type=text] {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 1.1rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 18px;
+    transition: border-color 0.3s;
+  }
+  input[type=text]:focus {
+    outline: none;
+    border-color: #d32f2f;
+  }
+  button.primary-btn {
+    width: 100%;
+    background: #d32f2f;
+    color: white;
+    border: none;
+    font-size: 1.15rem;
+    padding: 14px 0;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 12px rgba(211,47,47,0.4);
+    transition: background-color 0.3s, box-shadow 0.3s;
+  }
+  button.primary-btn:hover {
+    background: #a02727;
+    box-shadow: 0 12px 24px rgba(160,39,39,0.5);
+  }
+  /* Video Details */
+  .video-details {
+    margin-top: 20px;
+  }
+  .thumbnail-container {
+    text-align: center;
+    margin-bottom: 18px;
+  }
+  .thumbnail-container img {
+    max-width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.1);
+  }
+  .download-btn {
+    margin-top: 12px;
+    background: #d32f2f;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  .download-btn:hover {
+    background: #a02727;
+  }
+  /* Info blocks */
+  .info-block {
+    background: #f9f9f9;
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 7px rgba(0,0,0,0.03);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .info-text {
+    max-width: 85%;
+    overflow-wrap: break-word;
+    font-size: 1rem;
+    color: #222;
+  }
+  .copy-btn {
+    background: #d32f2f;
+    border: none;
+    color: white;
+    padding: 8px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s;
+    flex-shrink: 0;
+  }
+  .copy-btn:hover {
+    background: #a02727;
+  }
+  /* Tags */
+  .tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .tag-pill {
+    background: #ffe5e5;
+    border: 1.5px solid #d32f2f;
+    padding: 6px 14px;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .tag-copy-btn {
+    background: #d32f2f;
+    border: none;
+    padding: 2px 9px;
+    border-radius: 18px;
+    color: white;
+    font-size: 0.8rem;
+    cursor: pointer;
+    font-weight: 700;
+    transition: background-color 0.3s;
+  }
+  .tag-copy-btn:hover {
+    background: #a02727;
+  }
+  /* TOAST */
+  #toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #d32f2f;
+    color: white;
+    padding: 14px 24px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 1rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+    z-index: 9999;
+    box-shadow: 0 5px 20px rgba(211,47,47,0.8);
+  }
+  #toast.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  /* Footer */
+  footer {
+    background: #222;
+    color: #ccc;
+    text-align: center;
+    padding: 14px 10px;
+    font-size: 0.9rem;
+  }
+  footer a {
+    color: #ccc;
+    margin: 0 12px;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  footer a:hover {
+    color: #fff;
+    text-decoration: underline;
+  }
+  /* Pages */
+  .page {
+    display: none;
+  }
+  .page.active {
+    display: block;
+  }
+  /* Scrollbar styling */
+  main::-webkit-scrollbar {
+    width: 6px;
+  }
+  main::-webkit-scrollbar-thumb {
+    background: #d32f2f;
+    border-radius: 10px;
+  }
+</style>
 </head>
 <body>
-  <header>
-    <div class="logo">YOUTUBE HUB TOOL</div>
-    <nav>
-      <a href="#" onclick="showPage('privacy')">Privacy Policy</a>
-      <a href="#" onclick="showPage('terms')">Terms & Conditions</a>
-      <a href="#" onclick="showPage('contact')">Contact Us</a>
-    </nav>
-    <div class="hamburger" aria-label="Open menu" tabindex="0" role="button" onclick="toggleDrawer()" onkeypress="event.key==='Enter' && toggleDrawer()">
-      <div></div><div></div><div></div>
-    </div>
-  </header>
-
-  <div id="drawer" aria-hidden="true" tabindex="-1">
-    <a href="#" onclick="showPage('privacy'); toggleDrawer()">Privacy Policy</a>
-    <a href="#" onclick="showPage('terms'); toggleDrawer()">Terms & Conditions</a>
-    <a href="#" onclick="showPage('contact'); toggleDrawer()">Contact Us</a>
-  </div>
-
+<div id="app">
+  <header>YOUTUBE HUB TOOL</header>
+  <nav>
+    <button id="nav-home" class="active" onclick="showPage('home')">Home</button>
+    <button id="nav-howto" onclick="showPage('howto')">How To Use</button>
+    <button id="nav-about" onclick="showPage('about')">About Us</button>
+    <button id="nav-privacy" onclick="showPage('privacy')">Privacy Policy</button>
+    <button id="nav-terms" onclick="showPage('terms')">Terms</button>
+    <button id="nav-contact" onclick="showPage('contact')">Contact</button>
+  </nav>
   <main>
-    <input type="text" id="videoUrl" placeholder="YouTube Video URL डालें" aria-label="YouTube Video URL" autocomplete="off" />
-    <button id="extractBtn" onclick="getVideoInfo()">Extract Info</button>
-
-    <section id="videoDetails" class="video-info" aria-live="polite" aria-atomic="true"></section>
+    <section id="home" class="page active">
+      <input type="text" id="videoUrl" placeholder="YouTube Video URL डालें" />
+      <button class="primary-btn" onclick="getVideoInfo()">Extract Info</button>
+      <div id="videoDetails" class="video-details"></div>
+    </section>
+    <section id="howto" class="page">
+      <h2>How To Use YOUTUBE HUB TOOL</h2>
+      <p>1. ऊपर दिए गए इनपुट बॉक्स में YouTube वीडियो URL डालें।</p>
+      <p>2. "Extract Info" बटन पर क्लिक करें।</p>
+      <p>3. वीडियो का टाइटल, डिस्क्रिप्शन, टैग्स और थंबनेल डेटा प्रदर्शित होगा।</p>
+      <p>4. थंबनेल डाउनलोड करें या किसी भी टेक्स्ट को कॉपी करने के लिए कॉपी बटन का उपयोग करें।</p>
+      <p>5. वेबसाइट पूरी तरह मोबाइल फ्रेंडली है और ऐप जैसा अनुभव देती है।</p>
+    </section>
+    <section id="about" class="page">
+      <h2>About YOUTUBE HUB TOOL</h2>
+      <p>YOUTUBE HUB TOOL एक सरल, तेज़, और भरोसेमंद टूल है जो YouTube वीडियो से जानकारी निकालने में मदद करता है।</p>
+      <p>हमारा लक्ष्य आपको बेहतरीन यूजर अनुभव देना है, जहाँ आप आसानी से वीडियो की जानकारी प्राप्त कर सकें।</p>
+      <p>यह टूल पूरी तरह से वेब पर आधारित है और बिना किसी अतिरिक्त सॉफ्टवेयर के उपयोग किया जा सकता है।</p>
+    </section>
+    <section id="privacy" class="page">
+      <h2>Privacy Policy</h2>
+      <p>यहाँ अपनी वेबसाइट की गोपनीयता नीति लिखें। उदाहरण के लिए, यूज़र डेटा कैसे संग्रहित किया जाता है, कूकीज़ किस प्रकार उपयोग की जाती हैं, आदि।</p>
+    </section>
+    <section id="terms" class="page">
+      <h2>Terms and Conditions</h2>
+      <p>यहाँ अपनी वेबसाइट के नियम और शर्तें लिखें। उपयोग की शर्तें, चर्चित नियम और उपयोगकर्ता के अधिकारों को स्पष्ट करें।</p>
+    </section>
+    <section id="contact" class="page">
+      <h2>Contact Us</h2>
+      <p>हमसे संपर्क करें:</p>
+      <ul>
+        <li>Email: support@youtubehubtool.com</li>
+        <li>Phone: +91 1234567890</li>
+        <li>Social: <a href="#" style="color:#d32f2f;">@youtubehubtool</a></li>
+      </ul>
+    </section>
   </main>
-
-  <section id="privacy" class="page-content" tabindex="0">
-    <h2>Privacy Policy</h2>
-    <p>यहां अपनी वेबसाइट की Privacy Policy लिखें। यूज़र डेटा सुरक्षा, कूकीज़, और गोपनीयता संबंधी जानकारी शामिल करें।</p>
-  </section>
-
-  <section id="terms" class="page-content" tabindex="0">
-    <h2>Terms and Conditions</h2>
-    <p>यहां अपनी वेबसाइट के Terms and Conditions डालें। उपयोग की शर्तें, अधिकार, और प्रतिबंध शामिल करें।</p>
-  </section>
-
-  <section id="contact" class="page-content" tabindex="0">
-    <h2>Contact Us</h2>
-    <p>संपर्क करने के लिए Email, Phone, या सोशल मीडिया लिंक यहाँ डालें।</p>
-  </section>
-
   <footer>
-    <a href="#" onclick="showPage('privacy')">Privacy Policy</a>
-    <a href="#" onclick="showPage('terms')">Terms & Conditions</a>
+    <a href="#" onclick="showPage('privacy')">Privacy Policy</a> |
+    <a href="#" onclick="showPage('terms')">Terms and Conditions</a> |
     <a href="#" onclick="showPage('contact')">Contact Us</a>
-    <div style="margin-top: 8px; color: #888;">© YOUTUBE HUB TOOL</div>
+    <div style="margin-top:8px; color:#aaa;">© YOUTUBE HUB TOOL</div>
   </footer>
-
-  <div id="toast" class="toast" role="alert" aria-live="assertive"></div>
+</div>
+<div id="toast"></div>
 
 <script>
   const API_KEY = "AIzaSyBydjq8_OatY41_IY1V4iiq7lgClSVn1fk";
 
+  // Navigation to page
+  function showPage(pageId) {
+    document.querySelectorAll('section.page').forEach(p => {
+      p.classList.remove('active');
+    });
+    document.querySelectorAll('nav button').forEach(btn=>{
+      btn.classList.remove('active');
+    });
+    document.getElementById(pageId).classList.add('active');
+    const navBtn = document.getElementById('nav-' + pageId);
+    if(navBtn) navBtn.classList.add('active');
+    window.scrollTo({top:0, behavior: 'smooth'});
+  }
+
+  // Extract video ID
   function getVideoId(url) {
-    const regExp = /^.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const regExp = /(?:youtu\.be\/|youtube\.com\/(?:shorts\/|embed\/|v\/|watch\?v=|watch\?.+&v=))([a-zA-Z0-9_-]{11})/;
     const match = url.match(regExp);
     return (match && match[1].length === 11) ? match[1] : null;
   }
 
-  async function getVideoInfo() {
-    const url = document.getElementById("videoUrl").value.trim();
-    const videoId = getVideoId(url);
-
-    if (!videoId) {
-      showToast("सही YouTube URL डालें!");
-      return;
-    }
-
-    try {
-      const response = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}&key=${API_KEY}`);
-      const data = await response.json();
-
-      if (!data.items || data.items.length === 0) {
-        showToast("वीडियो नहीं मिला!");
-        return;
-      }
-
-      const snippet = data.items[0].snippet;
-      const title = snippet.title;
-      const description = snippet.description;
-      const tags = snippet.tags || [];
-      const thumbnail = snippet.thumbnails.high.url;
-
-      const tagsHtml = tags.map(tag => `
-        <div class="tag-wrapper">
-          <span class="tag">${tag}</span>
-          <button class="tag-copy-btn" onclick="copyText('${tag.replace(/'/g, "\\'")}')" aria-label="Copy tag ${tag}">Copy</button>
-        </div>
-      `).join("");
-
-      document.getElementById("videoDetails").innerHTML = `
-        <div class="thumbnail" tabindex="0" aria-label="Video thumbnail">
-          <img src="${thumbnail}" alt="Thumbnail" />
-          <button class="download-btn" onclick="downloadThumbnail('${thumbnail}')" aria-label="Download thumbnail">Download Thumbnail</button>
-        </div>
-        <div class="info-box">
-          <div class="info-text"><strong>Title:</strong> ${title}</div>
-          <button class="copy-btn" onclick="copyText(\`${title.replace(/`/g,"")}\`)" aria-label="Copy video title">Copy</button>
-        </div>
-        <div class="info-box">
-          <div class="info-text"><strong>Description:</strong><br>${description}</div>
-          <button class="copy-btn" onclick="copyText(\`${description.replace(/`/g,"")}\`)" aria-label="Copy video description">Copy</button>
-        </div>
-        <div class="info-box"><strong>Tags:</strong></div>
-        <div class="tags">${tagsHtml}</div>
-      `;
-    } catch (error) {
-      console.error(error);
-      showToast("Error आया है, API key चेक करें!");
-    }
+  // Show toast message
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.style.opacity = '1';
+    toast.style.pointerEvents = 'auto';
+    toast.style.transition = 'opacity 0.5s ease';
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.pointerEvents = 'none';
+    }, 1800);
   }
 
+  // Copy text helper
   function copyText(text) {
     navigator.clipboard.writeText(text).then(() => {
       showToast("कॉपी हो गया ✅");
+    }).catch(() => {
+      showToast("कॉपी करने में समस्या हुई!");
     });
   }
 
+  // Download Thumbnail with Canvas (CORS friendly)
   function downloadThumbnail(url) {
     const img = new Image();
     img.crossOrigin = "anonymous";
-    img.onload = function() {
+    img.onload = () => {
       const canvas = document.createElement('canvas');
       canvas.width = img.naturalWidth;
       canvas.height = img.naturalHeight;
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0);
-      canvas.toBlob(function(blob) {
+      canvas.toBlob(blob => {
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
         a.download = 'youtube_thumbnail.jpg';
@@ -544,33 +374,68 @@
         showToast("Thumbnail Download हो गया ✅");
       }, 'image/jpeg');
     };
-    img.onerror = function() {
-      showToast("Download failed: CORS error या thumbnail inaccessible हो सकता है");
+    img.onerror = () => {
+      showToast("डाउनलोड असफल: CORS या एक्सेस प्रॉब्लम");
     };
     img.src = url;
   }
 
-  function showToast(msg) {
-    const toast = document.getElementById("toast");
-    toast.textContent = msg;
-    toast.classList.add("show");
-    setTimeout(() => toast.classList.remove("show"), 1900);
-  }
+  // Fetch YouTube Video Info
+  async function getVideoInfo() {
+    const url = document.getElementById('videoUrl').value.trim();
+    const videoId = getVideoId(url);
+    if (!videoId) {
+      showToast('सही YouTube URL डालें!');
+      return;
+    }
+    try {
+      const response = await fetch(
+        `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}&key=${API_KEY}`
+      );
+      const data = await response.json();
+      if (!data.items || data.items.length === 0) {
+        showToast('वीडियो नहीं मिला!');
+        return;
+      }
+      const snippet = data.items[0].snippet;
+      const title = snippet.title;
+      const description = snippet.description;
+      const tags = snippet.tags || [];
+      const thumbnail = snippet.thumbnails.high.url;
 
-  // Drawer menu toggling for mobile view
-  function toggleDrawer() {
-    const drawer = document.getElementById('drawer');
-    drawer.classList.toggle('show');
-    drawer.setAttribute('aria-hidden', !drawer.classList.contains('show'));
-  }
+      const tagsHtml = tags
+        .map(
+          tag => `
+        <div class="tag-pill">
+          <span>${tag}</span>
+          <button class="tag-copy-btn" onclick="copyText('${tag.replace(/'/g, "\\'")}')">Copy</button>
+        </div>
+      `
+        )
+        .join('');
 
-  // Show privacy/terms/contact page and hide others
-  function showPage(id) {
-    const pages = document.querySelectorAll('section.page-content');
-    pages.forEach(page => page.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    if(window.innerWidth <= 720) toggleDrawer();
-    window.scrollTo({top:0, behavior:'smooth'});
+      document.getElementById('videoDetails').innerHTML = `
+        <div class="thumbnail-container">
+          <img src="${thumbnail}" alt="Thumbnail" />
+          <button class="download-btn" onclick="downloadThumbnail('${thumbnail}')">Download Thumbnail</button>
+        </div>
+        <div class="info-block">
+          <div class="info-text"><strong>Title:</strong> ${title}</div>
+          <button class="copy-btn" onclick="copyText(\`${title.replace(/`/g, '')}\`)">Copy</button>
+        </div>
+        <div class="info-block">
+          <div class="info-text"><strong>Description:</strong><br>${description}</div>
+          <button class="copy-btn" onclick="copyText(\`${description.replace(/`/g, '')}\`)">Copy</button>
+        </div>
+        <div>
+          <strong>Tags:</strong>
+          <div class="tags-container">${tagsHtml}</div>
+        </div>
+      `;
+    } catch (e) {
+      console.error(e);
+      showToast('Error आया है, API चेक करें!');
+    }
   }
 </script>
 </body>
